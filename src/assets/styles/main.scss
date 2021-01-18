@@ -1,0 +1,31 @@
+@import "normalizestyles";
+@import "variables";
+
+body {
+  font-family: "Helvetica", sans-serif;
+  font-size: 1rem;
+  line-height: 1.25rem;
+}
+
+// custom styles
+.custom-container {
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 1rem;
+
+  &.small {
+    max-width: 425px;
+  }
+
+  @include for-middle() {
+    max-width: 900px;
+  }
+}
+
+.error-text {
+  height: 20px;
+  font-size: 0.75rem;
+  color: #ff0202;
+}
