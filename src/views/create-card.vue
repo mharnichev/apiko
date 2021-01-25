@@ -1,40 +1,52 @@
 <template>
   <div>
     <custom-wrapper :title="'Add product'" class="create-card" :size="'large'">
-      <form class="create-card__input-wrapper" action="#" @submit.prevent="submit">
+      <form class="create-card__input-wrapper" action="#" @submit.prevent="addCard">
         <custom-input
             :label="'title'"
-            :title="'title'"
+            :title="'title<span>*</span>'"
             :input-id="'title'"
             type="text"
             :placeholder="'For example: your dream place'"
-            v-model="form.email"
-        ></custom-input>
+            v-model="form.title"
+            name="title"
+            v-validate="'required|min:2'"
+        >
+          <p class="error-text">{{ errors.first('title') }}</p>
+        </custom-input>
         <custom-input
             :label="'location'"
-            :title="'location'"
+            :title="'location<span>*</span>'"
             :input-id="'location'"
             type="text"
             :placeholder="'For example: Los Angeles, CA'"
             v-model="form.location"
-        ></custom-input>
-          <custom-textarea
-              :title="'description'"
-              :label="'description'"
-              :input-id="'description'"
-              :placeholder="'Whats new?'"
-              v-model="form.description"
-          ></custom-textarea>
-        <custom-downloader :title="'photos'" />
+            name="location"
+            v-validate="'required|min:2'"
+        >
+          <p class="error-text">{{ errors.first('location') }}</p>
+        </custom-input>
+        <custom-textarea
+            :title="'description'"
+            :label="'description'"
+            :input-id="'description'"
+            :placeholder="'Whats new?'"
+            v-model="form.description"
+        ></custom-textarea>
+        <custom-downloader @addFile="checkImg" :title="'photos'"/>
         <custom-input
-            :label="'location'"
-            :title="'location'"
-            :input-id="'location'"
+            :label="'price'"
+            :title="'price<span>*</span>'"
+            :input-id="'price'"
             type="number"
-            :placeholder="'For example: Los Angeles, CA'"
+            name="price"
+            :placeholder="'For example: 100$'"
             v-model="form.price"
-        ></custom-input>
-        <custom-button class="create-card__btn" type="submit" :text="'Continue'" />
+            v-validate="'required|min:2'"
+        >
+          <p class="error-text">{{ errors.first('price') }}</p>
+        </custom-input>
+        <custom-button class="create-card__btn" type="submit" :text="'Continue'"/>
       </form>
     </custom-wrapper>
   </div>
@@ -60,25 +72,112 @@ export default {
   data() {
     return {
       form: {
-        email: "",
+        title: "",
         location: "",
         description: "",
+        price: "",
+        card: {},
+        upLoadImg: null,
       },
-      error: null
+      error: null,
+      testMest: false
     };
   },
   methods: {
-    submit() {
-      console.log(this.form.email, this.form.location, this.form.description);
-      // firebase
-      //     .auth()
-      //     .signInWithEmailAndPassword(this.form.email, this.form.password)
-      //     .then(data => {
-      //       this.$router.replace({ name: "Dashboard" });
-      //     })
-      //     .catch(err => {
-      //       this.error = err.message;
-      //     });
+    checkImg(img) {
+      this.upLoadImg = img;
+    },
+    addCard() {
+      if (this.upLoadImg) {
+        const storageRef = firebase.storage().ref();
+        const imagesRef = storageRef.child(`images/${this.upLoadImg.name}`);
+        // imgUrl = imagesRef;
+
+        storageRef.child(`images/${this.upLoadImg.name}`).getDownloadURL()
+            .then((url) => {
+              // `url` is the download URL for 'images/stars.jpg'
+
+              // This can be downloaded directly:
+              const xhr = new XMLHttpRequest();
+              xhr.responseType = 'blob';
+              xhr.onload = (event) => {
+                const blob = xhr.response;
+              };
+              xhr.open('GET', url);
+              xhr.send();
+
+              // Or inserted into an <img> element
+              const img = document.getElementById('myimg');
+              img.setAttribute('src', url);
+            })
+            .catch((error) => {
+              // Handle any errors
+            });
+
+
+
+        console.log('imagesRef', imagesRef);
+      }
+
+
+
+      this.$validator.validate().then((result) => {
+        let imgUrl;
+
+        if (result) {
+          if (this.upLoadImg) {
+            const storageRef = firebase.storage().ref();
+            const imagesRef = storageRef.child(`images/${this.upLoadImg.name}`);
+            imgUrl = imagesRef;
+
+            console.log('imagesRef', imagesRef);
+
+
+
+            // imagesRef.put(this.file).then(function(snapshot) {
+            //   console.log(snapshot);
+            // });
+          }
+
+
+          const db = firebase.database();
+          const ref = db.ref("cards/");
+
+          const ID = function () {
+            return Math.random().toString(36).substr(2, 10);
+          };
+
+          let listKey = ID();
+          const cardsRef = ref.child("item");
+          const actualDate = new Date().toLocaleString().split(',');
+
+          try {
+            this.card = {
+              title: this.form.title,
+              location: this.form.location,
+              description: this.form.description ? this.form.description : "",
+              price: this.form.price,
+              id: ID(),
+              key: listKey,
+              date: actualDate[0],
+              time: actualDate[1]
+            };
+
+            cardsRef.update({
+              title: this.card.title,
+              location: this.card.location,
+              description: this.card.description,
+              price: this.card.price,
+              id: this.card.id,
+              key: this.card.key,
+              date: this.card.date,
+              time: this.card.time
+            });
+          } catch (e) {
+            console.log('create card is fail', e);
+          }
+        }
+      });
     }
   }
 };

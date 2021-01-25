@@ -1,8 +1,6 @@
 <template>
   <div class="custom-input">
-    <label class="custom-input__label" :for="label" v-if="label && title">
-      {{title}}
-    </label>
+    <label v-html="title" class="custom-input__label" :for="label" v-if="label && title" />
     <input
         v-if="type !== 'password'"
         :type="type"
@@ -96,6 +94,10 @@ export default {
     letter-spacing: 0.3px;
     text-transform: uppercase;
     padding: 0 0 4px;
+
+   ::v-deep span {
+      color: red;
+    }
   }
 
   &__input {
