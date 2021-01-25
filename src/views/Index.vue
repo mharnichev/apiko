@@ -1,7 +1,7 @@
 <template>
   <section class="g-page">
    <div class="g-page__container custom-container">
-
+      <main-search />
      <div class="g-page__cards-container">
        <main-cards
            v-for="(item, i) in cardList"
@@ -45,14 +45,15 @@ import firebase from "firebase";
 import MainCards from "@/components/main/main-cards";
 import CustomModal from "@/components/elements/custom-modal";
 import CustomFavorite from "@/components/elements/custom-favorite";
-
+import MainSearch from "@/components/main/main-search";
 
 export default {
   name: 'Home',
   components: {
     MainCards,
     CustomModal,
-    CustomFavorite
+    CustomFavorite,
+    MainSearch
   },
   data() {
     return {
