@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import firebase from "firebase";
 import MainCards from "@/components/main/main-cards";
 import CustomModal from "@/components/elements/custom-modal";
 import CustomFavorite from "@/components/elements/custom-favorite";
@@ -61,6 +62,7 @@ export default {
         type: Object,
         default: {}
       },
+      fbCards: null,
       cardList: [
         {
           title: 'USA',
@@ -93,7 +95,6 @@ export default {
           location: 'San Francisco',
         },
       ],
-
     }
   },
   methods: {
@@ -109,7 +110,35 @@ export default {
     addToFavorite() {
       console.log('lol')
     }
-  }
+  },
+  created() {
+
+    const db = firebase.database();
+    const ref = db.ref("cards/");
+
+    try {
+      ref.on("value", (snapshot) => {
+        console.log(snapshot.val());
+        this.fbCards = Object.values(snapshot.val());
+        console.log('fbCards 1234', this.fbCards);
+      }, function (errorObject) {
+        console.log("The read failed: " + errorObject.code);
+      });
+    } catch (e) {
+      console.log('add card', e);
+    }
+
+    // console.log(this.fbCards);
+
+    // this.addCards();
+    // this.fbCards = this.addCards();
+    // console.log(this.fbCards);
+
+
+  },
+  // addCards() {
+  //
+  // }
 }
 </script>
 

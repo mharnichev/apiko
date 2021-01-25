@@ -8,7 +8,7 @@
 
 
 <script>
-import HeaderBlock from "@/components/header";
+import HeaderBlock from "@/components/header/header";
 import FooterBlock from "@/components/footer";
 
 export default {
