@@ -1,10 +1,10 @@
 <template>
   <section class="ms">
-    <custom-wrapper :size="'large'" class="ms__container custom-container">
+    <custom-wrapper :size="'large'" class="ms__container">
       <div class="ms__categories">
         <custom-selector
             :options="['cheap', 'hot offer', 'expensive']"
-            :default="'go'"
+            :default="'Pick category'"
             class="select"
             @input="alert(displayToKey($event))"
         />
@@ -28,3 +28,11 @@ export default  {
   },
 }
 </script>
+
+<style scoped lang="scss">
+.ms {
+  &__categories {
+    padding: 12px 0;
+  }
+}
+</style>

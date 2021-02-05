@@ -80,103 +80,66 @@ export default {
         upLoadImg: null,
       },
       error: null,
-      testMest: false
+      cardIsAd: false
     };
   },
   methods: {
     checkImg(img) {
       this.upLoadImg = img;
     },
-    addCard() {
+    async addCard() {
       if (this.upLoadImg) {
         const storageRef = firebase.storage().ref();
         const imagesRef = storageRef.child(`images/${this.upLoadImg.name}`);
-        // imgUrl = imagesRef;
 
-        storageRef.child(`images/${this.upLoadImg.name}`).getDownloadURL()
-            .then((url) => {
-              // `url` is the download URL for 'images/stars.jpg'
+        await imagesRef.put(this.upLoadImg);
+        const addImg = await storageRef.child(`images/${this.upLoadImg.name}`).getDownloadURL();
 
-              // This can be downloaded directly:
-              const xhr = new XMLHttpRequest();
-              xhr.responseType = 'blob';
-              xhr.onload = (event) => {
-                const blob = xhr.response;
-              };
-              xhr.open('GET', url);
-              xhr.send();
-
-              // Or inserted into an <img> element
-              const img = document.getElementById('myimg');
-              img.setAttribute('src', url);
-            })
-            .catch((error) => {
-              // Handle any errors
-            });
-
-
-
-        console.log('imagesRef', imagesRef);
+        this.uploadCard(addImg);
+      } else {
+        this.uploadCard();
       }
-
-
+    },
+    uploadCard(addImg) {
 
       this.$validator.validate().then((result) => {
-        let imgUrl;
-
         if (result) {
-          if (this.upLoadImg) {
-            const storageRef = firebase.storage().ref();
-            const imagesRef = storageRef.child(`images/${this.upLoadImg.name}`);
-            imgUrl = imagesRef;
+          // const db = firebase.database();
+          // const ref = db.ref("cards/");
+          //
+          // const ID = function () {
+          //   return Math.random().toString(36).substr(2, 10);
+          // };
+          //
+          // let listKey = ID();
+          // const cardsRef = ref.child("item");
+          // const actualDate = new Date().toLocaleString().split(',');
+          //
+          // try {
+          //   cardsRef.update({
+          //     title: this.form.title,
+          //     location: this.form.location,
+          //     description: this.form.description ? this.form.description : "",
+          //     price: this.form.price,
+          //     id: ID(),
+          //     key: listKey,
+          //     date: actualDate[0],
+          //     time: actualDate[1],
+          //     img: addImg ? addImg : 'empty'
+          //   });
+          //
+          //   console.log('well done, check firebase');
+          // } catch (e) {
+          //   console.log('create card is fail', e);
+          // }
 
-            console.log('imagesRef', imagesRef);
-
-
-
-            // imagesRef.put(this.file).then(function(snapshot) {
-            //   console.log(snapshot);
-            // });
-          }
-
-
-          const db = firebase.database();
-          const ref = db.ref("cards/");
-
-          const ID = function () {
-            return Math.random().toString(36).substr(2, 10);
-          };
-
-          let listKey = ID();
-          const cardsRef = ref.child("item");
-          const actualDate = new Date().toLocaleString().split(',');
-
-          try {
-            this.card = {
-              title: this.form.title,
-              location: this.form.location,
-              description: this.form.description ? this.form.description : "",
-              price: this.form.price,
-              id: ID(),
-              key: listKey,
-              date: actualDate[0],
-              time: actualDate[1]
-            };
-
-            cardsRef.update({
-              title: this.card.title,
-              location: this.card.location,
-              description: this.card.description,
-              price: this.card.price,
-              id: this.card.id,
-              key: this.card.key,
-              date: this.card.date,
-              time: this.card.time
-            });
-          } catch (e) {
-            console.log('create card is fail', e);
-          }
+          this.form.title = "";
+          this.form.location = "";
+          this.form.description = "";
+          this.form.price = "";
         }
+
+
       });
     }
   }
