@@ -31,8 +31,7 @@ export default {
     onFileChange(e) {
       const file = e.target.files[0];
       this.url = URL.createObjectURL(file);
-
-      this.$emit('addFile', this.url);
+      this.$emit('addFile', file);
     }
   },
 
@@ -102,7 +101,5 @@ export default {
     text-transform: uppercase;
     padding: 0 0 4px;
   }
-
 }
-
 </style>
